@@ -1,7 +1,8 @@
-package com.voitov.justshoppinglist
+package com.voitov.justshoppinglist.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.voitov.justshoppinglist.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
