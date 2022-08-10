@@ -2,7 +2,7 @@ package com.voitov.justshoppinglist.domain
 
 class EditShopItemUseCase(private val shopListRepository: ShopListRepository) {
 
-    fun editShopItem(id: Int) {
-        shopListRepository.editShopItem(id)
+    fun editShopItem(shopItem: ShopItem) {
+        shopListRepository.editShopItem(shopItem)
     }
 }
