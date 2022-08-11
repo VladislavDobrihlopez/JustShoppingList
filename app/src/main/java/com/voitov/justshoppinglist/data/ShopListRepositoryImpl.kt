@@ -1,12 +1,25 @@
 package com.voitov.justshoppinglist.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.voitov.justshoppinglist.domain.ShopItem
 import com.voitov.justshoppinglist.domain.ShopListRepository
 import java.lang.RuntimeException
 
 object ShopListRepositoryImpl : ShopListRepository {
 
-    private val shopItems = mutableListOf<ShopItem>()
+    private val shopItems = sortedSetOf(object : Comparator<ShopItem> {
+        override fun compare(p0: ShopItem, p1: ShopItem): Int {
+            return p0.id.compareTo(p1.id)
+        }
+    })
+    private val shopListLD = MutableLiveData<List<ShopItem>>()
+
+    init {
+        for (i in 1..10) {
+            addShopItem(ShopItem("thing $i", 1.5f, true))
+        }
+    }
 
     private var autoIncrementId = 0
 
@@ -15,15 +28,17 @@ object ShopListRepositoryImpl : ShopListRepository {
             shopItem.id = autoIncrementId++
         }
         shopItems.add(shopItem)
+        updateLiveData()
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
         shopItems.remove(shopItem)
+        updateLiveData()
     }
 
     override fun editShopItem(shopItem: ShopItem) {
         val oldShopItem = getShopItem(shopItem.id)
-        deleteShopItem(oldShopItem)
+        shopItems.remove(oldShopItem)
         addShopItem(shopItem)
     }
 
@@ -33,7 +48,11 @@ object ShopListRepositoryImpl : ShopListRepository {
         } ?: throw RuntimeException("Element with id $id is not found")
     }
 
-    override fun getShopList(): List<ShopItem> {
-        return shopItems.toList()
+    override fun getShopList(): LiveData<List<ShopItem>> {
+        return shopListLD
+    }
+
+    private fun updateLiveData() {
+        shopListLD.value = shopItems.toList()
     }
 }
