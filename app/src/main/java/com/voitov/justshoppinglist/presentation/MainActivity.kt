@@ -1,15 +1,14 @@
 package com.voitov.justshoppinglist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.Observer
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.voitov.justshoppinglist.R
-import com.voitov.justshoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -23,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupRecyclerView()
+        setupButtonClickListener()
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
@@ -75,12 +75,21 @@ class MainActivity : AppCompatActivity() {
     private fun setupShopItemClickListener() {
         adapter.onShopItemClickListener = {
             Log.d(TAG, it.toString())
+            startActivity(ShopItemInfoActivity.newIntentModeEdit(this, it.id))
         }
     }
 
     private fun setupShopItemLongClickListener() {
         adapter.onShopItemLongClickListener = {
             viewModel.changeEnableState(it)
+        }
+    }
+
+    private fun setupButtonClickListener() {
+        val buttonAddShopItem = findViewById<FloatingActionButton>(R.id.buttonAddShopItem)
+
+        buttonAddShopItem.setOnClickListener {
+            startActivity(ShopItemInfoActivity.newIntentModeAdd(this))
         }
     }
 }
