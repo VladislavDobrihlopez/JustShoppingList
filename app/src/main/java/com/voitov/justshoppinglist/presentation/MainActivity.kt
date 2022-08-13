@@ -26,15 +26,9 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        viewModel.shopList.observe(this, object : Observer<List<ShopItem>> {
-            override fun onChanged(it: List<ShopItem>) {
-                Log.d(TAG, it.toString())
-
-                adapter.shopItems = it
-            }
-        })
-
-        //viewModel.editShopItem(ShopItem("dadada", 7.7f, true, 0))
+        viewModel.shopList.observe(this) { it ->
+            adapter.submitList(it)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -69,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val itemPosition = viewHolder.adapterPosition
-                val shopItem = adapter.shopItems[itemPosition]
+                val shopItem = adapter.currentList[itemPosition]
                 viewModel.deleteShopItem(shopItem)
             }
         }
