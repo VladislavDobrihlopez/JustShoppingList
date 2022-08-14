@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.voitov.justshoppinglist.domain.ShopItem
 import com.voitov.justshoppinglist.domain.ShopListRepository
-import java.lang.RuntimeException
 import kotlin.random.Random
 
+//TODO Add a real database
 object ShopListRepositoryImpl : ShopListRepository {
 
     private val shopItems = sortedSetOf(object : Comparator<ShopItem> {

@@ -1,17 +1,10 @@
 package com.voitov.justshoppinglist.presentation
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.voitov.justshoppinglist.R
 import com.voitov.justshoppinglist.domain.ShopItem
-import java.lang.RuntimeException
 
 class ShopListAdapter :
     ListAdapter<ShopItem, ShopListViewHolder>(ShopItemDiffUtilCallback()) {
@@ -40,7 +33,7 @@ class ShopListAdapter :
         val layout = when (viewType) {
             SHOP_ITEM_FOCUSED -> R.layout.shop_item_focused
             SHOP_ITEM_UNFOCUSED -> R.layout.shop_item_unfocused
-            else -> throw RuntimeException("Unknown view type is used $viewType")
+            else -> throw RuntimeException("Unknown viewType $viewType is used")
         }
 
         val view = LayoutInflater.from(parent.context)

@@ -1,7 +1,5 @@
 package com.voitov.justshoppinglist.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.voitov.justshoppinglist.data.ShopListRepositoryImpl
 import com.voitov.justshoppinglist.domain.DeleteShopItemUseCase

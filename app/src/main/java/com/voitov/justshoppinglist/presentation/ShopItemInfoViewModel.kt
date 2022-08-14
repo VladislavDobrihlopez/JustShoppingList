@@ -8,7 +8,6 @@ import com.voitov.justshoppinglist.domain.AddShopItemUseCase
 import com.voitov.justshoppinglist.domain.EditShopItemUseCase
 import com.voitov.justshoppinglist.domain.GetShopItemUseCase
 import com.voitov.justshoppinglist.domain.ShopItem
-import java.lang.Exception
 
 class ShopItemInfoViewModel : ViewModel() {
     private val repository = ShopListRepositoryImpl
@@ -55,7 +54,6 @@ class ShopItemInfoViewModel : ViewModel() {
             addShopItemUseCase.addShopItem(shopItem)
             _haveToCloseView.value = Unit
         }
-
     }
 
     fun editShopItem(shopItemId: Int, editedName: String?, editedCount: String?) {
