@@ -15,10 +15,10 @@ class ShopItemInfoViewModel : ViewModel() {
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
 
-    private val _shopItemLD = MutableLiveData<ShopItem>()
-    val shopItemLD: LiveData<ShopItem>
+    private val _shopItem = MutableLiveData<ShopItem>()
+    val shopItem: LiveData<ShopItem>
         get() {
-            return _shopItemLD
+            return _shopItem
         }
 
     private val _errorInputName = MutableLiveData<Boolean>()
@@ -40,7 +40,7 @@ class ShopItemInfoViewModel : ViewModel() {
         }
 
     fun getShopItem(shopItemId: Int) {
-        _shopItemLD.value = getShopItemUseCase.getShopItem(shopItemId)
+        _shopItem.value = getShopItemUseCase.getShopItem(shopItemId)
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -60,9 +60,9 @@ class ShopItemInfoViewModel : ViewModel() {
         val name = parseInputName(editedName)
         val count = parseInputCount(editedCount)
 
-        val areFieldValid = validateInput(name, count)
+        val areFieldsValid = validateInput(name, count)
 
-        if (areFieldValid) {
+        if (areFieldsValid) {
             val shopItem = getShopItemUseCase.getShopItem(shopItemId)
             val newShopItem = shopItem.copy(name = name, count = count)
 

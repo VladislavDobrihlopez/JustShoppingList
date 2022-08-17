@@ -3,33 +3,24 @@ package com.voitov.justshoppinglist.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.voitov.justshoppinglist.R
 import com.voitov.justshoppinglist.domain.ShopItem
 
-class ShopItemInfoActivity : AppCompatActivity() {
-    //    private lateinit var textInputLayoutName: TextInputLayout
-//    private lateinit var textInputEditTextName: TextInputEditText
-//    private lateinit var textInputLayoutCount: TextInputLayout
-//    private lateinit var textInputEditTextCount: TextInputEditText
-//    private lateinit var buttonSave: Button
-//
-//    private lateinit var viewModel: ShopItemInfoViewModel
-//
+class ShopItemInfoActivity : AppCompatActivity(), ShopItemInfoFragment.OnEditingFinishedListener {
     private var viewModeFromIntent = VIEW_MODE_UNKNOWN
     private var shopItemIdFromIntent = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item_info)
-        parseIntent()
-//
-//        initViews()
-        //viewModel = ViewModelProvider(this).get(ShopItemInfoViewModel::class.java)
 
-//        setupClickListeners()
-//        observeViewModel()
-        startAppropriateViewMode()
+        parseIntent()
+
+        if (savedInstanceState == null) {
+            startAppropriateViewMode()
+        }
     }
 
     private fun startAppropriateViewMode() {
@@ -45,32 +36,6 @@ class ShopItemInfoActivity : AppCompatActivity() {
             .commit()
     }
 
-    //
-//    private fun startAddViewMode() {
-//        buttonSave.setOnClickListener {
-//            val name = textInputEditTextName.text?.toString()
-//            val count = textInputEditTextCount.text?.toString()
-//
-//            viewModel.addShopItem(name, count)
-//        }
-//    }
-//
-//    private fun startEditViewMode() {
-//        viewModel.getShopItem(shopItemIdFromIntent)
-//
-//        viewModel.shopItemLD.observe(this) {
-//            textInputEditTextName.setText(it.name)
-//            textInputEditTextCount.setText(it.count.toString())
-//        }
-//
-//        buttonSave.setOnClickListener {
-//            val name = textInputEditTextName.text?.toString()
-//            val count = textInputEditTextCount.text?.toString()
-//
-//            viewModel.editShopItem(shopItemIdFromIntent, name, count)
-//        }
-//    }
-//
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_VIEW_MODE)) {
             throw RuntimeException("Param EXTRA_VIEW_MODE is absent")
@@ -92,66 +57,6 @@ class ShopItemInfoActivity : AppCompatActivity() {
             throw RuntimeException("Unknown mode $viewMode is used")
         }
     }
-//
-//    private fun initViews() {
-//        textInputLayoutName = findViewById(R.id.textInputLayoutName)
-//        textInputEditTextName = findViewById(R.id.textInputEditTextName)
-//        textInputLayoutCount = findViewById(R.id.textInputLayoutCount)
-//        textInputEditTextCount = findViewById(R.id.textInputEditTextCount)
-//        buttonSave = findViewById(R.id.buttonSave)
-//    }
-//
-//    private fun setupClickListeners() {
-//        textInputEditTextCount.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                //TODO("Not yet implemented")
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputCount()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//                //TODO("Not yet implemented")
-//            }
-//        })
-//
-//        textInputEditTextName.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                //TODO("Not yet implemented")
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputName()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//                //TODO("Not yet implemented")
-//            }
-//        })
-//    }
-//
-//    private fun observeViewModel() {
-//        viewModel.haveToCloseView.observe(this) {
-//            finish()
-//        }
-//
-//        viewModel.errorInputName.observe(this) {
-//            textInputLayoutName.error = if (it) {
-//                getString(R.string.error_input_name)
-//            } else {
-//                null
-//            }
-//        }
-//
-//        viewModel.errorInputCount.observe(this) {
-//            textInputLayoutCount.error = if (it) {
-//                getString(R.string.error_input_count)
-//            } else {
-//                null
-//            }
-//        }
-//    }
 
     companion object {
         private const val EXTRA_VIEW_MODE = "extra_mode"
@@ -173,5 +78,9 @@ class ShopItemInfoActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_VIEW_MODE, VIEW_MODE_ADD)
             return intent
         }
+    }
+
+    override fun onEditingFinished() {
+        finish()
     }
 }

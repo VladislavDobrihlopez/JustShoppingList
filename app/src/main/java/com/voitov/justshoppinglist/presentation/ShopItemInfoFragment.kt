@@ -1,8 +1,11 @@
 package com.voitov.justshoppinglist.presentation
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,12 +24,29 @@ class ShopItemInfoFragment : Fragment() {
     private lateinit var textInputEditTextCount: TextInputEditText
     private lateinit var buttonSave: Button
 
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+
     private lateinit var viewModel: ShopItemInfoViewModel
-    private var viewModeFromIntent: String = VIEW_MODE_UNKNOWN
-    private var shopItemIdFromIntent: Int = ShopItem.UNDEFINED_ID
+    private var viewModeFromBundle: String = VIEW_MODE_UNKNOWN
+    private var shopItemIdFromBundle: Int = ShopItem.UNDEFINED_ID
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        Log.d(TAG, "onAttach")
+
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("It seems like activity doesn't implement the OnEditingFinishedListener interface")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d(TAG, "onCreate")
+
         parseParams()
     }
 
@@ -35,10 +55,13 @@ class ShopItemInfoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_shop_info_item, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated")
+
         viewModel = ViewModelProvider(this).get(ShopItemInfoViewModel::class.java)
         initViews(view)
 
@@ -47,8 +70,50 @@ class ShopItemInfoFragment : Fragment() {
         startAppropriateViewMode()
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        Log.d(TAG, "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Log.d(TAG, "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        Log.d(TAG, "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        Log.d(TAG, "onStop")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        Log.d(TAG, "onDestroyView")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Log.d(TAG, "onDestroy")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+
+        Log.d(TAG, "onDetach")
+    }
+
     private fun startAppropriateViewMode() {
-        when (viewModeFromIntent) {
+        when (viewModeFromBundle) {
             VIEW_MODE_ADD -> startAddViewMode()
             VIEW_MODE_EDIT -> startEditViewMode()
         }
@@ -60,13 +125,15 @@ class ShopItemInfoFragment : Fragment() {
             val count = textInputEditTextCount.text?.toString()
 
             viewModel.addShopItem(name, count)
+
+            startActivity(Intent(context, MainActivity2::class.java))
         }
     }
 
     private fun startEditViewMode() {
-        viewModel.getShopItem(shopItemIdFromIntent)
+        viewModel.getShopItem(shopItemIdFromBundle)
 
-        viewModel.shopItemLD.observe(viewLifecycleOwner) {
+        viewModel.shopItem.observe(viewLifecycleOwner) {
             textInputEditTextName.setText(it.name)
             textInputEditTextCount.setText(it.count.toString())
         }
@@ -75,7 +142,7 @@ class ShopItemInfoFragment : Fragment() {
             val name = textInputEditTextName.text?.toString()
             val count = textInputEditTextCount.text?.toString()
 
-            viewModel.editShopItem(shopItemIdFromIntent, name, count)
+            viewModel.editShopItem(shopItemIdFromBundle, name, count)
         }
     }
 
@@ -89,12 +156,12 @@ class ShopItemInfoFragment : Fragment() {
         val viewMode = args.get(PARAM_VIEW_MODE)
 
         if (viewMode == VIEW_MODE_ADD) {
-            viewModeFromIntent = VIEW_MODE_ADD
+            viewModeFromBundle = VIEW_MODE_ADD
         } else if (viewMode == VIEW_MODE_EDIT) {
-            viewModeFromIntent = VIEW_MODE_EDIT
+            viewModeFromBundle = VIEW_MODE_EDIT
 
-            shopItemIdFromIntent = args.getInt(PARAM_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-            if (shopItemIdFromIntent == ShopItem.UNDEFINED_ID) {
+            shopItemIdFromBundle = args.getInt(PARAM_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
+            if (shopItemIdFromBundle == ShopItem.UNDEFINED_ID) {
                 throw RuntimeException("Param EXTRA_SHOP_ITEM_ID is absent")
             }
         } else {
@@ -142,7 +209,8 @@ class ShopItemInfoFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.haveToCloseView.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            //activity?.onBackPressed()
+            onEditingFinishedListener.onEditingFinished()
         }
 
         viewModel.errorInputName.observe(viewLifecycleOwner) {
@@ -163,6 +231,7 @@ class ShopItemInfoFragment : Fragment() {
     }
 
     companion object {
+        private const val TAG = "ShopItemInfoFragment"
         private const val PARAM_VIEW_MODE = "extra_mode"
         private const val VIEW_MODE_ADD = "mode_add"
         private const val VIEW_MODE_EDIT = "mode_edit"
@@ -188,4 +257,7 @@ class ShopItemInfoFragment : Fragment() {
         }
     }
 
+    interface OnEditingFinishedListener {
+        fun onEditingFinished()
+    }
 }
