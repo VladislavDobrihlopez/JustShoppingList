@@ -61,14 +61,13 @@ class ShopListAdapter :
         val shopItem = getItem(position)
         val binding = viewHolder.dataBinding
 
+
         when (binding) {
             is ShopItemFocusedBinding -> {
-                binding.textViewName.text = shopItem.name
-                binding.textViewCount.text = shopItem.count.toString()
+                binding.shopItem = shopItem
             }
             is ShopItemUnfocusedBinding -> {
-                binding.textViewName.text = shopItem.name
-                binding.textViewCount.text = shopItem.count.toString()
+                binding.shopItem = shopItem
             }
             else -> throw RuntimeException("Unknown item view in onBindViewHolder")
         }

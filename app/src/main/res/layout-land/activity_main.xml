@@ -1,43 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.MainActivity">
+<layout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewShopList"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="@id/guidelineMiddleOfScreen"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:itemCount="7"
-        tools:listitem="@layout/shop_item_focused" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/buttonAddShopItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/add_shop_item_content_description"
-        android:src="@android:drawable/ic_input_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/guidelineMiddleOfScreen" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineMiddleOfScreen"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerViewOptional"
-        android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guidelineMiddleOfScreen" />
+        tools:context=".presentation.MainActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewShopList"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="@id/guidelineMiddleOfScreen"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:itemCount="7"
+            tools:listitem="@layout/shop_item_focused" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/buttonAddShopItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/add_shop_item_content_description"
+            android:src="@android:drawable/ic_input_add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guidelineMiddleOfScreen" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineMiddleOfScreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerViewOptional"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guidelineMiddleOfScreen" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

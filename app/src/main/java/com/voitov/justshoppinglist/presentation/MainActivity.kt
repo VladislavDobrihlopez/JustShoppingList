@@ -2,6 +2,7 @@ package com.voitov.justshoppinglist.presentation
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.voitov.justshoppinglist.R
+import com.voitov.justshoppinglist.databinding.ActivityMainBinding
 import com.voitov.justshoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity(), ShopItemInfoFragment.OnEditingFinishedListener {
@@ -21,14 +23,14 @@ class MainActivity : AppCompatActivity(), ShopItemInfoFragment.OnEditingFinished
 
     private lateinit var viewModel: MainViewModel
     private lateinit var adapter: ShopListAdapter
-    private var fragmentContainerViewOptional: FragmentContainerView? = null
+    private lateinit var viewBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("ShopItemInfoFragment", "Main activity method onCreate is called")
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
-        fragmentContainerViewOptional = findViewById(R.id.fragmentContainerViewOptional)
         setupRecyclerView()
         setupButtonClickListener()
 
@@ -70,7 +72,7 @@ class MainActivity : AppCompatActivity(), ShopItemInfoFragment.OnEditingFinished
     }
 
     private fun setupRecyclerView() {
-        val recyclerViewShopList = findViewById<RecyclerView>(R.id.recyclerViewShopList)
+        val recyclerViewShopList = viewBinding.recyclerViewShopList
         adapter = ShopListAdapter()
         recyclerViewShopList.adapter = adapter
 
@@ -121,7 +123,7 @@ class MainActivity : AppCompatActivity(), ShopItemInfoFragment.OnEditingFinished
     }
 
     private fun setupButtonClickListener() {
-        val buttonAddShopItem = findViewById<FloatingActionButton>(R.id.buttonAddShopItem)
+        val buttonAddShopItem = viewBinding.buttonAddShopItem
         buttonAddShopItem.setOnClickListener(getAppropriateOnButtonClickListener())
     }
 
@@ -146,7 +148,7 @@ class MainActivity : AppCompatActivity(), ShopItemInfoFragment.OnEditingFinished
             }
         }
 
-    private fun isBookOrientationMode() = fragmentContainerViewOptional == null
+    private fun isBookOrientationMode() = viewBinding.fragmentContainerViewOptional == null
 
     private fun startAppropriateFragment(fragment: Fragment) {
         supportFragmentManager.popBackStack()
