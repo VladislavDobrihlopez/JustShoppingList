@@ -1,7 +1,6 @@
 package com.voitov.justshoppinglist.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,26 +8,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import com.voitov.justshoppinglist.R
+import com.voitov.justshoppinglist.databinding.FragmentShopInfoItemBinding
 import com.voitov.justshoppinglist.domain.ShopItem
 
 class ShopItemInfoFragment : Fragment() {
-    private lateinit var textInputLayoutName: TextInputLayout
-    private lateinit var textInputEditTextName: TextInputEditText
-    private lateinit var textInputLayoutCount: TextInputLayout
-    private lateinit var textInputEditTextCount: TextInputEditText
-    private lateinit var buttonSave: Button
-
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
     private lateinit var viewModel: ShopItemInfoViewModel
     private var viewModeFromBundle: String = VIEW_MODE_UNKNOWN
     private var shopItemIdFromBundle: Int = ShopItem.UNDEFINED_ID
+
+    private var _viewBinding: FragmentShopInfoItemBinding? = null
+    private val viewBinding: FragmentShopInfoItemBinding
+        get() = _viewBinding
+            ?: throw RuntimeException("viewBinding in ShopItemInfoFragment is null")
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,16 +49,17 @@ class ShopItemInfoFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         Log.d(TAG, "onCreateView")
-        return inflater.inflate(R.layout.fragment_shop_info_item, container, false)
+        _viewBinding = FragmentShopInfoItemBinding.inflate(inflater, container, false)
+        return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewCreated")
 
         viewModel = ViewModelProvider(this).get(ShopItemInfoViewModel::class.java)
-        initViews(view)
+        setupViewBinding()
 
         setupClickListeners()
         observeViewModel()
@@ -96,7 +92,7 @@ class ShopItemInfoFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
+        _viewBinding = null
         Log.d(TAG, "onDestroyView")
     }
 
@@ -112,6 +108,11 @@ class ShopItemInfoFragment : Fragment() {
         Log.d(TAG, "onDetach")
     }
 
+    private fun setupViewBinding() {
+        viewBinding.viewModel = viewModel
+        viewBinding.lifecycleOwner = viewLifecycleOwner
+    }
+
     private fun startAppropriateViewMode() {
         when (viewModeFromBundle) {
             VIEW_MODE_ADD -> startAddViewMode()
@@ -120,27 +121,19 @@ class ShopItemInfoFragment : Fragment() {
     }
 
     private fun startAddViewMode() {
-        buttonSave.setOnClickListener {
-            val name = textInputEditTextName.text?.toString()
-            val count = textInputEditTextCount.text?.toString()
+        viewBinding.buttonSave.setOnClickListener {
+            val name = viewBinding.textInputEditTextName.text?.toString()
+            val count = viewBinding.textInputEditTextCount.text?.toString()
 
             viewModel.addShopItem(name, count)
-
-            startActivity(Intent(context, MainActivity2::class.java))
         }
     }
 
     private fun startEditViewMode() {
         viewModel.getShopItem(shopItemIdFromBundle)
-
-        viewModel.shopItem.observe(viewLifecycleOwner) {
-            textInputEditTextName.setText(it.name)
-            textInputEditTextCount.setText(it.count.toString())
-        }
-
-        buttonSave.setOnClickListener {
-            val name = textInputEditTextName.text?.toString()
-            val count = textInputEditTextCount.text?.toString()
+        viewBinding.buttonSave.setOnClickListener {
+            val name = viewBinding.textInputEditTextName.text?.toString()
+            val count = viewBinding.textInputEditTextCount.text?.toString()
 
             viewModel.editShopItem(shopItemIdFromBundle, name, count)
         }
@@ -169,16 +162,8 @@ class ShopItemInfoFragment : Fragment() {
         }
     }
 
-    private fun initViews(view: View) {
-        textInputLayoutName = view.findViewById(R.id.textInputLayoutName)
-        textInputEditTextName = view.findViewById(R.id.textInputEditTextName)
-        textInputLayoutCount = view.findViewById(R.id.textInputLayoutCount)
-        textInputEditTextCount = view.findViewById(R.id.textInputEditTextCount)
-        buttonSave = view.findViewById(R.id.buttonSave)
-    }
-
     private fun setupClickListeners() {
-        textInputEditTextCount.addTextChangedListener(object : TextWatcher {
+        viewBinding.textInputEditTextCount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //TODO("Not yet implemented")
             }
@@ -192,7 +177,7 @@ class ShopItemInfoFragment : Fragment() {
             }
         })
 
-        textInputEditTextName.addTextChangedListener(object : TextWatcher {
+        viewBinding.textInputEditTextName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //TODO("Not yet implemented")
             }
@@ -211,22 +196,6 @@ class ShopItemInfoFragment : Fragment() {
         viewModel.haveToCloseView.observe(viewLifecycleOwner) {
             //activity?.onBackPressed()
             onEditingFinishedListener.onEditingFinished()
-        }
-
-        viewModel.errorInputName.observe(viewLifecycleOwner) {
-            textInputLayoutName.error = if (it) {
-                getString(R.string.error_input_name)
-            } else {
-                null
-            }
-        }
-
-        viewModel.errorInputCount.observe(viewLifecycleOwner) {
-            textInputLayoutCount.error = if (it) {
-                getString(R.string.error_input_count)
-            } else {
-                null
-            }
         }
     }
 
