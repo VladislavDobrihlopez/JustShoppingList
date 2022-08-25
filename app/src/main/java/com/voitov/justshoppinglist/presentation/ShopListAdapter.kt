@@ -2,8 +2,12 @@ package com.voitov.justshoppinglist.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.voitov.justshoppinglist.R
+import com.voitov.justshoppinglist.databinding.ShopItemFocusedBinding
+import com.voitov.justshoppinglist.databinding.ShopItemUnfocusedBinding
 import com.voitov.justshoppinglist.domain.ShopItem
 
 class ShopListAdapter :
@@ -43,21 +47,38 @@ class ShopListAdapter :
                 false
             )
 
-        return ShopListViewHolder(view)
+        val itemBinding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
+
+        return ShopListViewHolder(itemBinding)
     }
 
     override fun onBindViewHolder(viewHolder: ShopListViewHolder, position: Int) {
         val shopItem = getItem(position)
+        val binding = viewHolder.dataBinding
 
-        viewHolder.textViewName.text = shopItem.name
-        viewHolder.textViewCount.text = shopItem.count.toString()
+        when (binding) {
+            is ShopItemFocusedBinding -> {
+                binding.textViewName.text = shopItem.name
+                binding.textViewCount.text = shopItem.count.toString()
+            }
+            is ShopItemUnfocusedBinding -> {
+                binding.textViewName.text = shopItem.name
+                binding.textViewCount.text = shopItem.count.toString()
+            }
+            else -> throw RuntimeException("Unknown item view in onBindViewHolder")
+        }
 
-        viewHolder.itemView.setOnLongClickListener {
+        binding.root.setOnLongClickListener {
             onShopItemLongClickListener?.invoke(shopItem)
             true
         }
 
-        viewHolder.itemView.setOnClickListener {
+        binding.root.setOnClickListener {
             onShopItemClickListener?.invoke(shopItem)
         }
     }
