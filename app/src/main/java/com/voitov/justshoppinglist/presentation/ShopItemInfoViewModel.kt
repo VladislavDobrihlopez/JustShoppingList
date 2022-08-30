@@ -9,12 +9,18 @@ import com.voitov.justshoppinglist.domain.AddShopItemUseCase
 import com.voitov.justshoppinglist.domain.EditShopItemUseCase
 import com.voitov.justshoppinglist.domain.GetShopItemUseCase
 import com.voitov.justshoppinglist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class ShopItemInfoViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = ShopListRepositoryImpl(application)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _shopItem = MutableLiveData<ShopItem>()
     val shopItem: LiveData<ShopItem>
@@ -41,7 +47,9 @@ class ShopItemInfoViewModel(application: Application) : AndroidViewModel(applica
         }
 
     fun getShopItem(shopItemId: Int) {
-        _shopItem.value = getShopItemUseCase.getShopItem(shopItemId)
+        scope.launch {
+            _shopItem.postValue(getShopItemUseCase.getShopItem(shopItemId))
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -52,8 +60,10 @@ class ShopItemInfoViewModel(application: Application) : AndroidViewModel(applica
 
         if (areFieldsValid) {
             val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            _haveToCloseView.value = Unit
+            scope.launch {
+                addShopItemUseCase.addShopItem(shopItem)
+                _haveToCloseView.postValue(Unit)
+            }
         }
     }
 
@@ -64,11 +74,13 @@ class ShopItemInfoViewModel(application: Application) : AndroidViewModel(applica
         val areFieldsValid = validateInput(name, count)
 
         if (areFieldsValid) {
-            val shopItem = getShopItemUseCase.getShopItem(shopItemId)
-            val newShopItem = shopItem.copy(name = name, count = count)
+            scope.launch {
+                val shopItem = getShopItemUseCase.getShopItem(shopItemId)
+                val newShopItem = shopItem.copy(name = name, count = count)
 
-            editShopItemUseCase.editShopItem(newShopItem)
-            _haveToCloseView.value = Unit
+                editShopItemUseCase.editShopItem(newShopItem)
+                _haveToCloseView.postValue(Unit)
+            }
         }
     }
 
@@ -108,5 +120,10 @@ class ShopItemInfoViewModel(application: Application) : AndroidViewModel(applica
 
     fun resetErrorInputCount() {
         _errorInputCount.value = false
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }

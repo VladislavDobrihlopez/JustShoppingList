@@ -7,6 +7,10 @@ import com.voitov.justshoppinglist.domain.DeleteShopItemUseCase
 import com.voitov.justshoppinglist.domain.EditShopItemUseCase
 import com.voitov.justshoppinglist.domain.GetShopListUseCase
 import com.voitov.justshoppinglist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -17,16 +21,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val shopList = getShopListUseCase.getShopList()
 
-    fun editShopItem(shopItem: ShopItem) {
-        editShopItemUseCase.editShopItem(shopItem)
-    }
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     fun deleteShopItem(shopItem: ShopItem) {
-        deleteShopItemUseCase.deleteShopItem(shopItem)
+        scope.launch {
+            deleteShopItemUseCase.deleteShopItem(shopItem)
+        }
     }
 
     fun changeEnableState(shopItem: ShopItem) {
-        val newShopItem = shopItem.copy(isEnabled = !shopItem.isEnabled)
-        editShopItem(newShopItem)
+        scope.launch {
+            val newShopItem = shopItem.copy(isEnabled = !shopItem.isEnabled)
+            editShopItemUseCase.editShopItem(newShopItem)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }
