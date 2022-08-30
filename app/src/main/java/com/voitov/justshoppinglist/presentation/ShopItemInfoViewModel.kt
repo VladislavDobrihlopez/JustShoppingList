@@ -1,16 +1,19 @@
 package com.voitov.justshoppinglist.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.voitov.justshoppinglist.data.ShopListRepositoryImpl
 import com.voitov.justshoppinglist.domain.AddShopItemUseCase
 import com.voitov.justshoppinglist.domain.EditShopItemUseCase
 import com.voitov.justshoppinglist.domain.GetShopItemUseCase
 import com.voitov.justshoppinglist.domain.ShopItem
+import kotlinx.coroutines.launch
 
-class ShopItemInfoViewModel : ViewModel() {
-    private val repository = ShopListRepositoryImpl
+class ShopItemInfoViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = ShopListRepositoryImpl(application)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
@@ -40,7 +43,9 @@ class ShopItemInfoViewModel : ViewModel() {
         }
 
     fun getShopItem(shopItemId: Int) {
-        _shopItem.value = getShopItemUseCase.getShopItem(shopItemId)
+        viewModelScope.launch {
+            _shopItem.postValue(getShopItemUseCase.getShopItem(shopItemId))
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -51,8 +56,10 @@ class ShopItemInfoViewModel : ViewModel() {
 
         if (areFieldsValid) {
             val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            _haveToCloseView.value = Unit
+            viewModelScope.launch {
+                addShopItemUseCase.addShopItem(shopItem)
+                _haveToCloseView.postValue(Unit)
+            }
         }
     }
 
@@ -63,11 +70,13 @@ class ShopItemInfoViewModel : ViewModel() {
         val areFieldsValid = validateInput(name, count)
 
         if (areFieldsValid) {
-            val shopItem = getShopItemUseCase.getShopItem(shopItemId)
-            val newShopItem = shopItem.copy(name = name, count = count)
+            viewModelScope.launch {
+                val shopItem = getShopItemUseCase.getShopItem(shopItemId)
+                val newShopItem = shopItem.copy(name = name, count = count)
 
-            editShopItemUseCase.editShopItem(newShopItem)
-            _haveToCloseView.value = Unit
+                editShopItemUseCase.editShopItem(newShopItem)
+                _haveToCloseView.postValue(Unit)
+            }
         }
     }
 
