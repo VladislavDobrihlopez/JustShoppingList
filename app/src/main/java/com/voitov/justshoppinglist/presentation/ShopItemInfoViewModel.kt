@@ -1,16 +1,17 @@
 package com.voitov.justshoppinglist.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.voitov.justshoppinglist.data.ShopListRepositoryImpl
 import com.voitov.justshoppinglist.domain.AddShopItemUseCase
 import com.voitov.justshoppinglist.domain.EditShopItemUseCase
 import com.voitov.justshoppinglist.domain.GetShopItemUseCase
 import com.voitov.justshoppinglist.domain.ShopItem
 
-class ShopItemInfoViewModel : ViewModel() {
-    private val repository = ShopListRepositoryImpl
+class ShopItemInfoViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = ShopListRepositoryImpl(application)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
